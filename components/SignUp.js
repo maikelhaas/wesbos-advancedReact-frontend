@@ -1,46 +1,39 @@
 import { useMutation } from '@apollo/client';
 import gql from 'graphql-tag';
 import useForm from '../lib/useForm';
-import { CURRENT_USER_QUERY } from '../lib/user';
 import ErrorMessage from './ErrorMessage';
 import Form from './styles/Form';
 
 // GraphQL Mutation
-const SIGNIN_MUTATION = gql`
+const SIGNUP_MUTATION = gql`
   # Create mutation and set the incoming variables and types
-  mutation SIGNIN_MUTATION($email: String!, $password: String!) {
-    # Try to log in with provided email and password
-    authenticateUserWithPassword(email: $email, password: $password) {
-      # If login is ok, return id, email and name of user
-      ... on UserAuthenticationWithPasswordSuccess {
-        item {
-          id
-          email
-          name
-        }
-      }
-      # If login fails, return error message and code
-      ... on UserAuthenticationWithPasswordFailure {
-        code
-        message
-      }
+  mutation SIGNUP_MUTATION(
+    $name: String!
+    $email: String!
+    $password: String!
+  ) {
+    createUser(data: { name: $name, email: $email, password: $password }) {
+      id
+      email
+      name
     }
   }
 `;
 
-export default function SignIn() {
+export default function SignUp() {
   // Custom hook for form handling
   // Set form default values to nothing initially
   const { inputs, handleChange, resetForm } = useForm({
+    name: '',
     email: '',
     password: '',
   });
 
   // Send the email and password to the GraphQL api
-  const [signin, { data, loading }] = useMutation(SIGNIN_MUTATION, {
+  const [signup, { data, loading, error }] = useMutation(SIGNUP_MUTATION, {
     variables: inputs,
     // Refetch the currently logged in user
-    refetchQueries: [{ query: CURRENT_USER_QUERY }],
+    // refetchQueries: [{ query: CURRENT_USER_QUERY }],
   });
 
   if (loading) return <p>Loading...</p>;
@@ -48,23 +41,29 @@ export default function SignIn() {
 
   async function handleSubmit(e) {
     e.preventDefault(); // stop the form from submitting
-    console.log(inputs);
-    const res = await signin();
-    console.log(res);
+    await signup().catch(console.error);
     resetForm();
   }
 
-  const error =
-    data?.authenticateUserWithPassword.__typename ===
-    'UserAuthenticationWithPasswordFailure'
-      ? data.authenticateUserWithPassword
-      : undefined;
-
   return (
     <Form method="POST" onSubmit={handleSubmit}>
-      <h2>Sign into your account!</h2>
+      <h2>Create an account!</h2>
       <ErrorMessage error={error} />
       <fieldset>
+        {data?.createUser && (
+          <p>Signed up with {data.createUser.email}, please sign in!</p>
+        )}
+        <label htmlFor="name">
+          Name
+          <input
+            type="text"
+            name="name"
+            placeholder="Name"
+            autoComplete="name"
+            value={inputs.name}
+            onChange={handleChange}
+          />
+        </label>
         <label htmlFor="email">
           Email
           <input
@@ -87,7 +86,7 @@ export default function SignIn() {
             onChange={handleChange}
           />
         </label>
-        <button type="submit">Submit</button>
+        <button type="submit">Create!</button>
       </fieldset>
     </Form>
   );

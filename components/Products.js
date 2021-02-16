@@ -1,5 +1,6 @@
 import { useQuery } from '@apollo/client';
 import gql from 'graphql-tag';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { perPage } from '../config';
 import Product from './Product';
@@ -34,7 +35,7 @@ export default function Products({ page }) {
       first: perPage,
     },
   });
-  console.log(data, error, loading);
+  // console.log(data, error, loading);
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
   return (
@@ -47,3 +48,7 @@ export default function Products({ page }) {
     </div>
   );
 }
+
+Products.propTypes = {
+  page: PropTypes.number,
+};
