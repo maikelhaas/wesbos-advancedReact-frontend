@@ -3,6 +3,7 @@ import NProgress from 'nprogress';
 import Router from 'next/router';
 import Page from '../components/Page';
 import withData from '../lib/withData';
+import { CartStateProvider } from '../lib/cartState';
 import '../components/styles/nprogress.css';
 
 // Show loader on top op the page
@@ -14,9 +15,11 @@ function MyApp({ Component, pageProps, apollo }) {
   // console.log(apollo);
   return (
     <ApolloProvider client={apollo}>
-      <Page>
-        <Component {...pageProps} />
-      </Page>
+      <CartStateProvider>
+        <Page>
+          <Component {...pageProps} />
+        </Page>
+      </CartStateProvider>
     </ApolloProvider>
   );
 }
