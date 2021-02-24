@@ -23,8 +23,8 @@ export default function AddToCart({ id }) {
     <button
       disabled={loading}
       onClick={() => {
-        openCart();
         addToCart();
+        openCart();
       }}
       type="button"
     >
