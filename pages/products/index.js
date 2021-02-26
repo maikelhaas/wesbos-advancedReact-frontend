@@ -1,5 +1,6 @@
 import { useRouter } from 'next/dist/client/router';
 import Pagination from '../../components/Pagination';
+import PleaseSignIn from '../../components/PleaseSignIn';
 import Products from '../../components/Products';
 
 export default function OrderPage() {
@@ -7,9 +8,11 @@ export default function OrderPage() {
   const page = parseInt(query.page);
   return (
     <div>
-      <Pagination page={page || 1} />
-      <Products page={page || 1} />
-      <Pagination page={page || 1} />
+      <PleaseSignIn>
+        <Pagination page={page || 1} />
+        <Products page={page || 1} />
+        <Pagination page={page || 1} />
+      </PleaseSignIn>
     </div>
   );
 }
